@@ -1,57 +1,59 @@
-# 🔁 Agentic Feedback Pipeline – Execution Flow Only
+# AI-Based Code Evaluator: Architecture Overview
 
-## 📘 Flow Overview (Agents: Syntax → Optimizer → Hint → Explainer)
-
-```plaintext
-[Frontend - React App]
-     │
-     ▼
-Submit Code (/submit_code)
-     │
-     ▼
-[Backend - FastAPI]
-     │
-     ▼
-Store Submission (MongoDB)
-     │
-     ▼
-Trigger Agentic Pipeline
-     │
-     ▼
-┌──────────────────────────────┐
-│   Syntax Checker Agent       │
-│   ▸ Detect syntax issues     │
-└──────────────────────────────┘
-     │
-     ▼
-┌──────────────────────────────┐
-│   Optimizer Agent            │
-│   ▸ Suggest code improvements│
-└──────────────────────────────┘
-     │
-     ▼
-┌──────────────────────────────┐
-│   Hint Generator Agent       │
-│   ▸ Provide learner-focused  │
-│     hints without solutions  │
-└──────────────────────────────┘
-     │
-     ▼
-┌──────────────────────────────┐
-│   Explainer Agent            │
-│   ▸ Summarize code behavior  │
-└──────────────────────────────┘
-     │
-     ▼
-Store Final Feedback (MongoDB)
-     │
-     ▼
-[Frontend Polls /feedback/:id]
-     │
-     ▼
-Render Structured Feedback
-```
+This document provides a full architecture diagram and breakdown of the code evaluator system using LangChain, Gemini, and FAISS. The system analyzes code submissions and provides feedback on syntax, logic, optimization, and progressive hints.
 
 ---
 
-Let me know if you’d like this exported as a PNG/SVG diagram.
+## 🔄 End-to-End Architecture Overview
+
+```
+           +-------------------+
+           |   User Submission |
+           +--------+----------+
+                    |
+                    v
+           +--------+----------+
+           |  process_code()   |  <-- Entry point
+           +--------+----------+
+                    |
+                    v
++-------------------+-------------------+
+|    Sequential Tool Evaluation Flow    |
++-------------------+-------------------+
+                    |
+   +----------------+----------------+
+   |                                 |
+   v                                 v
+[Syntax Validator]         [Logic Consistency Checker]
+  - ChatPromptTemplate       - ChatPromptTemplate
+  - Gemini LLM               - Gemini LLM
+  - JsonOutputParser         - JsonOutputParser
+                    |                                 
+                    v                                 
+   +----------------+----------------+
+   |                                 |
+   v                                 v
+[Optimization Advisor]      [Progressive Hinter]
+  - ChatPromptTemplate        - Uses explanation first
+  - Gemini LLM                - Then generates hints
+  - JsonOutputParser          - Both use LLM chains
+                    |                                 
+                    v                                 
+                 [Hint + Explanation Generator]
+                 - RAG with FAISS
+                 - HuggingFaceEmbeddings
+                 - DocumentRetriever (LangChain)
+                 - Gemini LLM
+                    |
+                    v
+           +--------+----------+
+           |  Aggregation &    |
+           |  Final Response   |
+           +--------+----------+
+                    |
+                    v
+           +--------+----------+
+           |     JSON Output    |
+           +-------------------+
+```
+
