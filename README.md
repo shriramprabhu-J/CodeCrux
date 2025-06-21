@@ -15,15 +15,15 @@ flowchart TD
     classDef dbLayer fill:#fbf,stroke:#333,stroke-width:2px;
     classDef outputLayer fill:#fbb,stroke:#333,stroke-width:2px;
 
-    subgraph Input[\"User Input Layer\"]
+    subgraph Input["User Input Layer"]
       A[Frontend UI / CLI]:::inputLayer
     end
 
-    subgraph API[\"API Gateway\"]
-      B[FastAPI Endpoint: /analyze-code]:::apiLayer
+    subgraph API["API Gateway"]
+      B[FastAPI / analyze-code]:::apiLayer
     end
 
-    subgraph Agents[\"LangChain Agent Orchestration\"]
+    subgraph Agents["LangChain Agent Orchestration"]
       C1[SyntaxValidatorAgent]:::agentLayer
       C2[LogicConsistencyAgent]:::agentLayer
       C3[OptimizationAdvisorAgent]:::agentLayer
@@ -31,21 +31,21 @@ flowchart TD
       C5[ProgressiveHinterAgent]:::agentLayer
     end
 
-    subgraph Sandbox[\"Execution Environment\"]
+    subgraph Sandbox["Execution Environment"]
       D[Docker Sandbox]:::sandboxLayer
     end
 
-    subgraph Database[\"MongoDB Storage\"]
+    subgraph Database["MongoDB Storage"]
       E1[(submissions)]:::dbLayer
       E2[(feedback_history)]:::dbLayer
     end
 
-    subgraph Output[\"Response to User\"]
-      F[JSON Response: FullFeedbackResponse]:::outputLayer
+    subgraph Output["Response to User"]
+      F[FullFeedbackResponse JSON]:::outputLayer
     end
 
     A -->|POST code + language| B
-    B -->|invoke run_manual_workflow| C1
+    B -->|run_manual_workflow| C1
     C1 --> C2
     C2 --> C3
     C3 --> C4
@@ -53,12 +53,11 @@ flowchart TD
     C5 --> B
     B -->|store_submission| E1
     B -->|store_feedback| E2
-    C2 -->|optional execution| D
+    C2 -->|optional code run| D
     D -->|execution logs/results| B
     B -->|return feedback| F
-    
-    %% Legend
-    class A,B,C1,C2,C3,C4,C5,D,E1,E2,F inputLayer,apiLayer,agentLayer,sandboxLayer,dbLayer,outputLayer;
+
+    %% legend styling via classes
 ```
 
 ---
